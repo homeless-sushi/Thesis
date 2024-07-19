@@ -1,0 +1,7 @@
+BENCHMARK,TYPE,INSTANCE_NAME,START_TIME,INPUT,OUTPUT,THROUGHPUT,APPEND
+CPP_CONTROLLER,SET_CONFIGURATION,,0,,,,--controller-log data/test_0/controller.csv --sensors-log data/test_0/power.csv --configuration-file data/test_0/config.txt
+HISTO,CONTROLLER,APP1,5,854x480.bin,app1.txt,1000,
+SGEMM,CONTROLLER,APP2,65,32x32.txt,app2.txt,1000,
+TERMINATE,,APP1,125,,,,
+TERMINATE,,APP2,185,,,,
+TERMINATE,,CPP_CONTROLLER,195,,,,
