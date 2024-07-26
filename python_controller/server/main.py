@@ -1,4 +1,7 @@
+import argparse
+import logging
 import os
+import sys
 
 import model.system_state
 import model.knowledge
@@ -13,6 +16,28 @@ import zmq
 
 # directory where to place all of a runs data
 SERVER_DIR = os.path.dirname(os.path.realpath(__file__))
+
+def setup_arg_parse() :
+
+    arg_parser = argparse.ArgumentParser(
+        prog='Python Controller',
+        description=
+            'This program runs the a server containing the policy of the controller.\n',
+        usage=f'{sys.argv[0]} --log-file LOG_URL '
+    )
+
+    arg_parser.add_argument(
+        "--log-file",
+        type=str, required=False,
+        help="URL for the log output"
+    )
+
+    return arg_parser
+
+def setup_logging(log_file) :
+
+    if log_file:
+        logging.basicConfig(filename=log_file, level=logging.INFO)
 
 def server_init():
 
@@ -40,12 +65,17 @@ def knowledge_init():
 
 def main():
     
+    arg_parser = setup_arg_parse()
+    args = arg_parser.parse_args()
+    setup_logging(args.log_file)
+
     knowledge_init()
     context, socket = server_init()
 
     controller_state : State = Idle(model.system_state.SystemState(), model.system_state.SystemState())
     controller_state.handle()
 
+    cycle_counter : int = 0
     while True:
         
         measured_state : str = socket.recv().decode('utf-8')
@@ -54,6 +84,18 @@ def main():
         controller_state.handle()
         prescribed_state : str = system_state_utility.write_system_state(controller_state.curr_prescribed)
         socket.send(prescribed_state.encode('utf8'))
+
+        logging.info(f"Cycle #{cycle_counter}\n" + "\n\t".join([
+            "MEASURED SYSTEM STATE:",
+            "\t"+measured_state.replace("\n", "\n\t\t"),
+            "NEW POLICY STATE: " + type(controller_state).__name__,
+            "PRESCRIBED SYSTEM STATE:",
+            "\t"+prescribed_state.replace("\n", "\n\t\t")
+        ]))
+
+        cycle_counter += 1
+
+        
 
 if __name__ == "__main__" :
     main()

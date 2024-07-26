@@ -80,12 +80,15 @@ def run_benchmark(name, type, instance_name, in_file, out_file, target_throughpu
  
     return process
 
-def run_python_controller() :
+def run_python_controller(append) :
     
     # python controller
     PYTHON_CONTROLLER_PATH = PROJECT_DIR + f"python_controller/server/main.py"
 
-    command = ["python3.8", PYTHON_CONTROLLER_PATH]
+    if not isinstance(append, str):
+        append = str(append)
+
+    command = ["python3.8", PYTHON_CONTROLLER_PATH] + append.split(" ")
 
     process = subprocess.Popen(
         command,
@@ -145,7 +148,9 @@ def main() :
 
             # if BENCHMARK is python controller
             if row[BENCHMARK] == PYTHON_CONTROLLER_NAME :
-                processes[PYTHON_CONTROLLER_NAME] = run_python_controller()
+                processes[PYTHON_CONTROLLER_NAME] = run_python_controller(
+                    row[APPEND]
+                )
             # if BENCHMARK is cpp controller
             elif row[BENCHMARK] == CPP_CONTROLLER_NAME :
                 processes[CPP_CONTROLLER_NAME] = run_cpp_controller(
