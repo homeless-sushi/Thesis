@@ -1,5 +1,5 @@
 BENCHMARK,TYPE,INSTANCE_NAME,START_TIME,INPUT,OUTPUT,THROUGHPUT,APPEND
-PYTHON_CONTROLLER,,,0,,,,
+PYTHON_CONTROLLER,,,0,,,,--log-file data/test_1/policy.csv
 CPP_CONTROLLER,PYTHON_POLICY,,5,,,,--controller-log data/test_1/controller.csv --sensors-log data/test_1/power.csv
 HISTO,CONTROLLER+MARGOT,APP1,10,854x480.bin,app1.txt,10,
 TERMINATE,,APP1,130,,,,
